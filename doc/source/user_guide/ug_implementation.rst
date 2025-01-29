@@ -150,9 +150,9 @@ default in this distribution, this is not a stringent limitation:
 Model output
 ------------
 
-History output from Icepack is not currently supported in the Icepack driver, except
-in restart files.
-The sea ice model `CICE <https://github.com/CICE-Consortium/CICE>`_ provides extensive 
+The Icepack model provides diagnostic output files, binary or netCDF restart files, 
+and a primitive netCDF history file capability.
+The sea ice model `CICE <https://github.com/CICE-Consortium/CICE>`_ provides more extensive 
 options for model output, including many derived output variables.
 
 Diagnostic files
@@ -165,7 +165,7 @@ Icepack writes diagnostic information for each grid cell as a separate file,
 Restart files
 ~~~~~~~~~~~~~
 
-Icepack provides restart data in binary unformatted format. The restart files 
+Icepack provides restart data in binary unformatted format or netCDF. The restart files 
 created by the Icepack driver contain all of the variables needed
 for a full, exact restart. The filename begins with the character string
 ‘iced.’ and is placed in the directory specified by the namelist variable
@@ -174,7 +174,38 @@ variable ``dumpfreq``. The namelist variable ``ice_ic`` contains the
 pointer to the filename from which the restart data is to be read and 
 the namelist option ``restart`` must be set to ``.true.`` to use the file.
 ``dump_last`` namelist can also be set to true to trigger restarts automatically
-at then end of runs.
+at the end of runs. The default restart file format is binary, set in
+namelist with ``restart_format`` = 'bin'. For netCDF, set ``restart_format`` = 'nc'
+or use ``icepack.setup -s restcdf``.
+
+The default configuration of Icepack does not support netCDF.  If netCDF restart files are
+desired, the USE_NETCDF C preprocessor directive must be set during compilation.  This
+is done by setting ``ICE_IOTYPE`` to ``netcdf`` in **icepack.settings** or using the
+``icepack.setup -s`` option ``ionetcdf``.  If netCDF is used on a particular machine, 
+the machine env and Macros file must support compilation with netCDF.
+
+History files
+~~~~~~~~~~~~~
+
+Icepack has a primitive netCDF history capability that is turned on with the
+``history_format`` namelist.  When ``history_format`` is set to 'nc', history files
+are created for each run with a naming convention of **icepack.h.yyyymmdd.nc**
+in the run directory history directory.  The yyyymmdd is the start date for each run.
+Use ``icepack.setup -s histcdf`` to turn on netCDF history files automatically.
+
+When Icepack history files are turned on, data for a set of fixed fields is written 
+to the history file for each column at every timestep without ability to control
+fields, frequencies, or temporal averaging.  All output fields are hardwired into
+the implementation in **configuration/driver/icedrv_history.F90** file.  The netCDF file 
+does NOT meet netCDF CF conventions and is provided as an amenity in the standalone
+Icepack model.  Users are free to modify the output fields or
+extend the implementation and are encouraged to share any updates with the Consortium.
+
+The default configuration of Icepack does not support netCDF.  If netCDF history files are
+desired, the USE_NETCDF C preprocessor directive must be set during compilation.  This
+is done by setting ``ICE_IOTYPE`` to ``netcdf`` in **icepack.settings** or using the
+``icepack.setup -s`` option ``ionetcdf``.  If netCDF is used on a particular machine, 
+the machine env and Macros file must support compilation with netCDF.
 
 .. _bgc-hist:
 
@@ -204,7 +235,7 @@ i.e. f\_fbio, except they are averaged by ice area.
    "f\_aero", "aerosol mass (snow and ice ssl and int)", "aerosnossl, aerosnoint,aeroicessl, aeroiceint", "kg/kg"
    "f\_fbio", "biological ice to ocean flux", "fN, fDOC, fNit, fAm,fDON,fFep\ :math:`^a`, fFed\ :math:`^a`, fSil,fhum, fPON, fDMSPd,fDMS, fDMSPp, fzaero", "mmol m\ :math:`^{-2}` s\ :math:`^{-1}`"
    "f\_zaero", "bulk z-aerosol mass fraction", "zaero", "kg/kg"
-   "f\_bgc\_S", "bulk z-salinity", "bgc\_S", "ppt"
+   "f\_bgc\_S", "DEPRECATED", "bgc\_S", "ppt"
    "f\_bgc\_N", "bulk algal N concentration", "bgc\_N", "mmol m\ :math:`^{-3}`"
    "f\_bgc\_C", "bulk algal C concentration", "bgc\_C", "mmol m\ :math:`^{-3}`"
    "f\_bgc\_DOC", "bulk DOC concentration", "bgc\_DOC", "mmol m\ :math:`^{-3}`"
@@ -243,3 +274,6 @@ i.e. f\_fbio, except they are averaged by ice area.
 :math:`^b` units are :math:`\mu`\ mol m\ :math:`^{-3}`
 
 :math:`^c` units are :math:`\mu`\ mol m\ :math:`^{-2}`
+
+.. deprecated
+.. "f\_bgc\_S", "bulk z-salinity", "bgc\_S", "ppt"

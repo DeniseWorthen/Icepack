@@ -14,7 +14,9 @@ FFLAGS     := -fconvert=big-endian -fbacktrace -ffree-line-length-none
 
 # Additional flags for the Fortran compiler when compiling in debug mode
 ifeq ($(ICE_BLDDEBUG), true)
-  FFLAGS   += -O0 -g -fcheck=bounds -finit-real=nan -fimplicit-none -ffpe-trap=invalid,zero,overflow
+# new version of conda gnu compiler has a bug in ffpe-trap=invalid with nf90_create
+#  FFLAGS   += -O0 -g -fcheck=bounds -finit-real=nan -fimplicit-none -ffpe-trap=invalid,zero,overflow
+  FFLAGS   += -O0 -g -fcheck=bounds -finit-real=nan -fimplicit-none -ffpe-trap=zero,overflow
 else
   FFLAGS   += -O2
 endif
@@ -26,6 +28,9 @@ CC := $(SCC)
 FC := $(SFC)
 LD := $(FC)
 
+# Location of the compiled Fortran modules (NetCDF)
+MODDIR  += -I$(CONDA_PREFIX)/include
+
 # Location of the system C header files (required on recent macOS to compile makdep)
 SDKPATH = $(shell xcrun --show-sdk-path)
 ifeq ($(strip $(SDKPATH)),)
@@ -34,6 +39,9 @@ else
   CFLAGS_HOST = -isysroot $(SDKPATH)
   LD += -L$(SDKPATH)/usr/lib
 endif
+
+# Libraries to be passed to the linker
+SLIBS   := -L$(CONDA_PREFIX)/lib -lnetcdf -lnetcdff
 
 # Necessary flag to compile with OpenMP support
 ifeq ($(ICE_THREADED), true)

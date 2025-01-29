@@ -120,7 +120,12 @@ parameterizations. Rain and all melted snow end up in the ocean.
 Wind stress and transfer coefficients for the
 turbulent heat fluxes are computed in subroutine
 *atmo\_boundary\_layer* following :cite:`Kauffman02`, with additions and changes as detailed in Appendix A of :cite:`Roberts15` for high frequency coupling (namelist variable ``highfreq``).
-The resulting equations are provided here.
+The resulting equations are provided here for the default boundary layer 
+scheme, which is based on Monin-Obukhov theory (``atmbndy = ‘stability’``). 
+Alternatively, ``atmbndy = ‘constant’`` provides constant coefficients for
+wind stress, sensible heat and latent heat calculations (computed in subroutine
+*atmo\_boundary\_const*); ``atmbndy = ‘mixed’`` uses the stability based 
+calculation for wind stress and constant coefficients for sensible and latent heat fluxes.
 
 The wind stress and turbulent heat flux calculation accounts for both
 stable and unstable atmosphere–ice boundary layers. We first define the
@@ -273,9 +278,20 @@ In addition to runoff from rain and melted snow, the fresh water flux
 and water frozen (a negative flux) or melted at the bottom surface of
 the ice. This flux is computed as the net change of fresh water in the
 ice and snow volume over the coupling time step, excluding frazil ice
-formation and newly accumulated snow. Setting the namelist option
+formation and newly accumulated snow. 
+
+Setting the namelist option
 ``update_ocn_f`` to true causes frazil ice to be included in the fresh
-water and salt fluxes.
+water and salt fluxes. Some ocean models compute the frazil ice fluxes, 
+which then might need to be corrected for consistency with mushy physics.
+This behavior is controlled using a combination of ``update_ocn_f``, 
+``cpl_frazil`` and ``ktherm``.  In particular,
+``cpl_frazil = 'external'`` assumes that the frazil ice fluxes are 
+handled entirely outside of Icepack. When ``ktherm=2``, 
+``cpl_frazil = 'fresh_ice_correction'``
+sends coupling fluxes representing the difference between the mushy frazil 
+fluxes and fluxes computed assuming the frazil is purely fresh ice.
+Otherwise the internally computed frazil fluxes are sent to the coupler.
 
 There is a flux of salt into the ocean under melting conditions, and a
 (negative) flux when sea water is freezing. However, melting sea ice
@@ -302,7 +318,7 @@ the ocean. If the resulting sea surface temperature falls below the
 salinity-dependent freezing point, then new ice (frazil) forms.
 Otherwise, heat is made available for melting the ice.
 
-The ice-ocean drag coefficient, :math:`c_w`, can optionally be computed from the thickness of the first ocean level, :math:`h_1`, and an under-ice roughness length, :math:`z_{io}`.
+When the namelist option ``calc_dragio`` is set to true, the ice-ocean drag coefficient, :math:`c_w` (``dragio``), is computed from the thickness of the first ocean level, :math:`h_1` (``thickness_ocn_layer1``), and an under-ice roughness length, :math:`z_{io}` (``iceruf_ocn``).
 The computation follows :cite:`Roy15` :
 
 .. math::
