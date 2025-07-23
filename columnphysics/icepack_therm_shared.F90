@@ -48,6 +48,8 @@
       logical (kind=log_kind), public :: &
          l_brine         ! if true, treat brine pocket effects
 
+      integer(kind=int_kind), public :: ijb(3)
+
 !=======================================================================
 
       contains

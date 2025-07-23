@@ -41,6 +41,9 @@
       use icepack_warnings,   only: icepack_warnings_setabort, icepack_warnings_aborted
       use icepack_zbgc_shared,only: zap_small_bgc
 
+      !debug
+      use icepack_therm_shared, only : ijb
+
       implicit none
 
       private
@@ -1896,12 +1899,3 @@
       end module icepack_itd
 
 !=======================================================================
-
-
-
-
-
-
-
-
-
