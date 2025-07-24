@@ -276,7 +276,7 @@
       ! In these cases the simpler 'rebin' subroutine will shift ice
       !  between categories if needed.
       !-----------------------------------------------------------------
-1001  continue
+!1001  continue
       remap_flag = .true.
 
       !-----------------------------------------------------------------
@@ -424,19 +424,19 @@
       endif
       hbnew(ncat) = max(hbnew(ncat),hin_max(ncat-1))
 
-      if (.not. remap_flag) then
-         if(badpnt) print '(a,2i5,10g14.7)','XXX0 rebin ',ijb(1:2),vicen,aicen
-         call rebin (trcr_depend,                  &
-              trcr_base,                 &
-              n_trcr_strata,             &
-              nt_strata,                 &
-              aicen,    trcrn,           &
-              vicen,    vsnon,           &
-              hin_max, Tf      )
-         if(badpnt) print '(a,2i5,10g14.7)','XXX1 rebin ',ijb(1:2),vicen,aicen
-         !remap_flag = .true.
-         go to 1001
-      end if
+      ! if (.not. remap_flag) then
+      !    if(badpnt) print '(a,2i5,10g14.7)','XXX0 rebin ',ijb(1:2),vicen,aicen
+      !    call rebin (trcr_depend,                  &
+      !         trcr_base,                 &
+      !         n_trcr_strata,             &
+      !         nt_strata,                 &
+      !         aicen,    trcrn,           &
+      !         vicen,    vsnon,           &
+      !         hin_max, Tf      )
+      !    if(badpnt) print '(a,2i5,10g14.7)','XXX1 rebin ',ijb(1:2),vicen,aicen
+      !    !remap_flag = .true.
+      !    go to 1001
+      ! end if
 
       !-----------------------------------------------------------------
       ! Identify cells where the ITD is to be remapped
@@ -639,16 +639,16 @@
                fpond = fpond - (da0 * trcrn(nt_apnd,1) &
                                     * trcrn(nt_hpnd,1))
          endif
-      ! else
-      !    if(badpnt) print '(a,2i5,10g14.7)','XXX0 rebin ',ijb(1:2),vicen,aicen
-      !    call rebin (trcr_depend,                  &
-      !                   trcr_base,                 &
-      !                   n_trcr_strata,             &
-      !                   nt_strata,                 &
-      !                   aicen,    trcrn,           &
-      !                   vicen,    vsnon,           &
-      !           	hin_max, Tf      )
-      !    if(badpnt) print '(a,2i5,10g14.7)','XXX1 rebin ',ijb(1:2),vicen,aicen
+      else
+         if(badpnt) print '(a,2i5,10g14.7)','XXX0 rebin ',ijb(1:2),vicen,aicen
+         call rebin (trcr_depend,                  &
+                        trcr_base,                 &
+                        n_trcr_strata,             &
+                        nt_strata,                 &
+                        aicen,    trcrn,           &
+                        vicen,    vsnon,           &
+                	hin_max, Tf      )
+         if(badpnt) print '(a,2i5,10g14.7)','XXX1 rebin ',ijb(1:2),vicen,aicen
       endif ! remap_flag
 
       !-----------------------------------------------------------------

@@ -426,6 +426,7 @@
       real (kind=dbl_kind), dimension(ncat) :: vsnon_init
 
       character(len=*),parameter :: subname='(shift_ice)'
+      logical :: badpnt
 
       !-----------------------------------------------------------------
       ! store initial snow and ice volume
