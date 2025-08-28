@@ -489,18 +489,18 @@
 !         William H. Lipscomb, LANL
 !         Elizabeth C. Hunke, LANL
 
-      subroutine frzmlt_bottom_lateral (dt,                 &
-                                        aice,     frzmlt,   &
-                                        vicen,    vsnon,    &
-                                        qicen,    qsnon,    &
-                                        sst,      Tf,       &
-                                        ustar_min,          &
-                                        fbot_xfer_type,     &
-                                        strocnxT, strocnyT, &
-                                        Tbot,     fbot,     &
+      subroutine frzmlt_bottom_lateral (dt,                  &
+                                        aice,     frzmlt,    &
+                                        vicen,    vsnon,     &
+                                        qicen,    qsnon,     &
+                                        sst,      Tf,        &
+                                        ustar_min,           &
+                                        fbot_xfer_type,      &
+                                        strocnxT, strocnyT,  &
+                                        Tbot,     fbot,      &
                                         rsiden,    Cdn_ocn,  &
-                                        wlat,      aicen, &
-                                        afsdn)
+                                        wlat,      aicen,    &
+                                        afsdn, floediameter)
 
       real (kind=dbl_kind), intent(in) :: &
          dt                  ! time step
@@ -513,7 +513,8 @@
          ustar_min,& ! minimum friction velocity for ice-ocean heat flux
          Cdn_ocn , & ! ocean-ice neutral drag coefficient
          strocnxT, & ! ice-ocean stress, x-direction
-         strocnyT    ! ice-ocean stress, y-direction
+         strocnyT, & ! ice-ocean stress, y-direction
+         floediameter! single floe diameter in grid cell (m)
 
       character (char_len), intent(in) :: &
          fbot_xfer_type  ! transfer coefficient type for ice-ocean heat flux
@@ -626,7 +627,7 @@
       !-----------------------------------------------------------------
 
          wlat_loc = m1 * deltaT**m2 ! Maykut & Perovich
-         rside = wlat_loc*dt*pi/(floeshape*floediam) ! Steele
+         rside = wlat_loc*dt*pi/(floeshape*floediameter) ! Steele
          rside = max(c0,min(rside,c1))
 
          if (rside == c0) return ! nothing more to do so get out
@@ -2269,7 +2270,8 @@
                                     dpnd_expon  , dpnd_exponn , &
                                     dpnd_freebd , dpnd_freebdn, &
                                     dpnd_initial, dpnd_initialn, &
-                                    dpnd_dlid   , dpnd_dlidn)
+                                    dpnd_dlid   , dpnd_dlidn,   &
+                                    floediameter )
 
       real (kind=dbl_kind), intent(in) :: &
          dt          , & ! time step
@@ -2400,7 +2402,8 @@
          HDO_ocn     , & ! ocean concentration of HDO         (kg/kg)
          H2_16O_ocn  , & ! ocean concentration of H2_16O      (kg/kg)
          H2_18O_ocn  , & ! ocean concentration of H2_18O      (kg/kg)
-         zlvs            ! atm level height for scalars (if different than zlvl) (m)
+         zlvs        , & ! atm level height for scalars (if different than zlvl) (m)
+         floediameter  & ! single floe diameter in grid cell (m)
 
       real (kind=dbl_kind), dimension(:,:), intent(in), optional :: &
          afsdn        ! afsd tracer
@@ -2543,7 +2546,8 @@
          l_fswthrun_pardf,& ! vis par dif SW through ice to ocean (W/m^2)
          l_dsnow,        & ! local snow change
          l_dsnown,       & ! local snow change category
-         l_meltsliq        ! mass of snow melt local           (kg/m^2)
+         l_meltsliq,     & ! mass of snow melt local           (kg/m^2)
+         l_diameter        ! single floe diameter (m)
 
       real (kind=dbl_kind) :: &
          l_dpnd_flushn,  & ! category pond flushing rate          (m/step)
@@ -2658,6 +2662,9 @@
       l_dsnow     = c0
       if (present(dsnow)) l_dsnow = dsnow
 
+      l_diameter   = floediam
+      if (present(floediameter)  ) l_diameter   = floediameter
+
       ! solid and liquid components of snow mass
       massicen(:,:) = c0
       massliqn(:,:) = c0
@@ -2737,7 +2744,7 @@
                                   Tbot,      fbot,      &
                                   rsiden,    Cdn_ocn,   &
                                   wlat,      aicen,     &
-                                  afsdn)
+                                  afsdn, l_diameter     )
 
       if (icepack_warnings_aborted(subname)) return
 
