@@ -2403,7 +2403,7 @@
          H2_16O_ocn  , & ! ocean concentration of H2_16O      (kg/kg)
          H2_18O_ocn  , & ! ocean concentration of H2_18O      (kg/kg)
          zlvs        , & ! atm level height for scalars (if different than zlvl) (m)
-         floediameter  & ! single floe diameter in grid cell (m)
+         floediameter    ! single floe diameter in grid cell (m)
 
       real (kind=dbl_kind), dimension(:,:), intent(in), optional :: &
          afsdn        ! afsd tracer
