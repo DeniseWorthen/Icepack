@@ -213,8 +213,9 @@
       !-----------------------------------------------------------------
 
       badpnt = .false.
-      if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1007)badpnt = .true.
-      if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1006)badpnt = .true.
+      !if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1007)badpnt = .true.
+      !if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1006)badpnt = .true.
+      if (ijb(1) .eq. 40 .and. ijb(2) .eq. 7)badpnt = .true.
 
       do n = 1, ncat
          donor(n) = 0
