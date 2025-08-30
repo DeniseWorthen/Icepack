@@ -56,7 +56,8 @@
       use icepack_itd, only: column_sum
       use icepack_itd, only: column_conservation_check
       use icepack_itd, only: cleanup_itd
-
+      !debug
+      use icepack_therm_shared, only : ijb
       implicit none
 
       private
@@ -265,8 +266,12 @@
 
       character (len=char_len) :: &
          fieldid        ! field identifier
+      !debug
+      logical :: badpnt
 
       character(len=*),parameter :: subname='(ridge_ice)'
+      badpnt = .false.
+      if (ijb(1) .eq. 40 .and. ijb(2) .eq. 7)badpnt = .true.
 
       !-----------------------------------------------------------------
       ! Initialize
@@ -287,6 +292,7 @@
       mraftn(:) = c0
       aopen     = c0
 
+      if(badpnt) print '(a,2i5,10g14.7)','AAA2a ridgeice ',ijb(1:2),vicen,aicen
       !-----------------------------------------------------------------
       ! Compute area of ice plus open water before ridging.
       !-----------------------------------------------------------------
@@ -315,6 +321,7 @@
 
       if (icepack_warnings_aborted(subname)) return
 
+      if(badpnt) print '(a,2i5,10g14.7)','AAA2b ridgeice ',ijb(1:2),vicen,aicen
       !-----------------------------------------------------------------
       ! Compute initial values of conserved quantities.
       !-----------------------------------------------------------------
@@ -363,7 +370,7 @@
       endif
 
       rdg_iteration: do niter = 1, nitermax
-
+         if(badpnt) print '(a,3i5,10g16.7)','AAA3a ridgeice iter ',niter,ijb(1:2),vicen,aicen
       !-----------------------------------------------------------------
       ! Compute the thickness distribution of ridging ice
       ! and various quantities associated with the new ridged ice.
@@ -379,6 +386,7 @@
                          aparticn,    krdgn,      &
                          mraftn)
          if (icepack_warnings_aborted(subname)) return
+         if(badpnt) print '(a,3i5,10g16.7)','AAA3b ridgeice iter ',niter,ijb(1:2),vicen,aicen
 
       !-----------------------------------------------------------------
       ! Redistribute area, volume, and energy.
@@ -404,6 +412,7 @@
                            aredistn,    vredistn,    &
                            mbio)
          if (icepack_warnings_aborted(subname)) return
+         if(badpnt) print '(a,3i5,10g16.7)','AAA3c ridgeice iter ',niter,ijb(1:2),vicen,aicen
 
       !-----------------------------------------------------------------
       ! Make sure the new area = 1.  If not (because the closing
@@ -1217,6 +1226,9 @@
          dzint          ! fraction of interior snow biotracers
 
       character(len=*),parameter :: subname='(ridge_shift)'
+      logical :: badpnt
+      badpnt = .false.
+      if (ijb(1) .eq. 40 .and. ijb(2) .eq. 7)badpnt = .true.
 
       do n = 1, ncat
 
@@ -1302,6 +1314,7 @@
 
       aopen = opning*dt  ! optional diagnostic
 
+      if(badpnt) print '(a,2i5,10g15.7)','AAA3a shiftridge ',ijb(1:2),vicen,aicen
       !-----------------------------------------------------------------
       ! Compute the area, volume, and energy of ice ridging in each
       !  category, along with the area of the resulting ridge.
@@ -1579,7 +1592,7 @@
          endif                     ! nonzero ridging
 
       enddo                        ! n (ridging categories)
-
+      if(badpnt) print '(a,2i5,10g15.7)','AAA3b shiftridge ',ijb(1:2),vicen,aicen
       !-----------------------------------------------------------------
       ! Compute new tracers
       !-----------------------------------------------------------------
@@ -1846,7 +1859,11 @@
       logical (kind=log_kind), save :: &
          first_call = .true.   ! first call flag
 
+      ! debug
+      logical :: badpnt
       character(len=*),parameter :: subname='(icepack_step_ridge)'
+      badpnt = .false.
+      if (ijb(1) .eq. 40 .and. ijb(2) .eq. 7)badpnt = .true.
 
       !-----------------------------------------------------------------
       ! Check optional arguments
@@ -1881,6 +1898,7 @@
       !        it may be out of whack, which the ridging helps fix).-ECH
       !-----------------------------------------------------------------
 
+      if(badpnt) print '(a,2i5,10g15.7)','AAA1a stepridge ',ijb(1:2),vicen,aicen
       call ridge_ice (dt,           ndtd,           &
                       hin_max,                      &
                       rdg_conv,     rdg_shear,      &
@@ -1907,6 +1925,7 @@
                       closing,      dpnd_ridge )
       if (icepack_warnings_aborted(subname)) return
 
+      if(badpnt) print '(a,2i5,10g15.7)','AAA1b stepridge ',ijb(1:2),vicen,aicen
       !-----------------------------------------------------------------
       ! ITD cleanup: Rebin thickness categories if necessary, and remove
       !  categories with very small areas.

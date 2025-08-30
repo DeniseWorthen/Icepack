@@ -57,6 +57,10 @@
       use icepack_zbgc, only: lateral_melt_bgc
       use icepack_zbgc_shared, only: bgrid, cgrid, igrid
 
+      !debug
+      use icepack_therm_shared, only : ijb
+      use icepack_itd, only : rebin
+
       implicit none
 
       private
@@ -201,9 +205,17 @@
 
       character(len=*),parameter :: subname='(linear_itd)'
 
+      ! debug
+      logical :: badpnt
+
       !-----------------------------------------------------------------
       ! Initialize
       !-----------------------------------------------------------------
+
+      badpnt = .false.
+      !if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1007)badpnt = .true.
+      !if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1006)badpnt = .true.
+      if (ijb(1) .eq. 40 .and. ijb(2) .eq. 7)badpnt = .true.
 
       do n = 1, ncat
          donor(n) = 0
@@ -269,7 +281,7 @@
       ! In these cases the simpler 'rebin' subroutine will shift ice
       !  between categories if needed.
       !-----------------------------------------------------------------
-
+!1001  continue
       remap_flag = .true.
 
       !-----------------------------------------------------------------
@@ -417,6 +429,20 @@
          hbnew(ncat) = hin_max(ncat)
       endif
       hbnew(ncat) = max(hbnew(ncat),hin_max(ncat-1))
+
+      ! if (.not. remap_flag) then
+      !    if(badpnt) print '(a,2i5,10g14.7)','XXX0 rebin ',ijb(1:2),vicen,aicen
+      !    call rebin (trcr_depend,                  &
+      !         trcr_base,                 &
+      !         n_trcr_strata,             &
+      !         nt_strata,                 &
+      !         aicen,    trcrn,           &
+      !         vicen,    vsnon,           &
+      !         hin_max, Tf      )
+      !    if(badpnt) print '(a,2i5,10g14.7)','XXX1 rebin ',ijb(1:2),vicen,aicen
+      !    !remap_flag = .true.
+      !    go to 1001
+      ! end if
 
       !-----------------------------------------------------------------
       ! Identify cells where the ITD is to be remapped
@@ -627,7 +653,16 @@
                fpond = fpond - (da0 * trcrn(nt_apnd,1) &
                                     * trcrn(nt_hpnd,1))
          endif
-
+      else
+         if(badpnt) print '(a,2i5,10g14.7)','XXX0 rebin ',ijb(1:2),vicen,aicen
+         call rebin (trcr_depend,                  &
+                        trcr_base,                 &
+                        n_trcr_strata,             &
+                        nt_strata,                 &
+                        aicen,    trcrn,           &
+                        vicen,    vsnon,           &
+                	hin_max, Tf      )
+         if(badpnt) print '(a,2i5,10g14.7)','XXX1 rebin ',ijb(1:2),vicen,aicen
       endif ! remap_flag
 
       !-----------------------------------------------------------------

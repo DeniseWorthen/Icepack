@@ -65,6 +65,10 @@
       use icepack_meltpond_sealvl, only: compute_ponds_sealvl
       use icepack_snow, only: drain_snow
 
+      !debug
+      !use ice_communicate, only : my_task
+      use icepack_therm_shared, only : ijb
+
       implicit none
 
       private
@@ -853,6 +857,7 @@
             endif
 
             if (zTsn(k) > Tmax) then
+               print *,'XXX Starting thermo, zTsn > Tmax',ijb
                write(warnstr,*) ' '
                call icepack_warnings_add(warnstr)
                write(warnstr,*) subname, 'Starting thermo, zTsn > Tmax'
@@ -967,6 +972,7 @@
       !-----------------------------------------------------------------
 
          if (tice_high) then
+            print *,'XXX Starting thermo, zTin > Tmax ',ijb
             write(warnstr,*) ' '
             call icepack_warnings_add(warnstr)
             write(warnstr,*) subname, 'Starting thermo, zTin > Tmax, layer', k

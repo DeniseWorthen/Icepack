@@ -42,6 +42,10 @@
       use icepack_warnings,   only: icepack_warnings_setabort, icepack_warnings_aborted
       use icepack_zbgc_shared,only: zap_small_bgc
 
+      !debug
+      !use ice_communicate, only : my_task
+      use icepack_therm_shared, only : ijb
+
       implicit none
 
       private
@@ -54,6 +58,8 @@
                 icepack_init_itd, &
                 icepack_init_itd_hist, &
                 icepack_aggregate
+      ! debug
+      public :: rebin
 
 !=======================================================================
 
@@ -438,6 +444,7 @@
       real (kind=dbl_kind), dimension(ncat) :: vsnon_init
 
       character(len=*),parameter :: subname='(shift_ice)'
+      logical :: badpnt
 
       !-----------------------------------------------------------------
       ! store initial snow and ice volume
@@ -542,7 +549,8 @@
 
          if (dvice_negative) then
                if (donor(n) > 0 .and.  &
-                   dvice(n) <= -puny*vicen(nd)) then
+                    dvice(n) <= -puny*vicen(nd)) then
+                  print '(a,2i6,2g15.7)','YYY shift_ice: negative dvice ',ijb(1:2),dvice(n),vicen(nd)
                   write(warnstr,*) ' '
                   call icepack_warnings_add(warnstr)
                   write(warnstr,*) subname, 'shift_ice: negative dvice'
@@ -1914,12 +1922,3 @@
       end module icepack_itd
 
 !=======================================================================
-
-
-
-
-
-
-
-
-
