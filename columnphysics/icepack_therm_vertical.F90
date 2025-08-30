@@ -67,7 +67,7 @@
 
       !debug
       !use ice_communicate, only : my_task
-      use icepack_therm_shared, only : ijb
+      !use icepack_therm_shared, only : ijb
 
       implicit none
 
@@ -634,7 +634,7 @@
          rside = wlat_loc*dt*pi/(floeshape*floediameter) ! Steele
          rside = max(c0,min(rside,c1))
          if (floediameter < floediam) then
-            print 'YYY2 floe diameter ',ijb(1:2),floediameter, aice
+            !print 'YYY2 floe diameter ',ijb(1:2),floediameter, aice
             rside = c1
          endif
 
@@ -861,7 +861,6 @@
             endif
 
             if (zTsn(k) > Tmax) then
-               print *,'XXX Starting thermo, zTsn > Tmax',ijb
                write(warnstr,*) ' '
                call icepack_warnings_add(warnstr)
                write(warnstr,*) subname, 'Starting thermo, zTsn > Tmax'
@@ -976,7 +975,6 @@
       !-----------------------------------------------------------------
 
          if (tice_high) then
-            print *,'XXX Starting thermo, zTin > Tmax ',ijb
             write(warnstr,*) ' '
             call icepack_warnings_add(warnstr)
             write(warnstr,*) subname, 'Starting thermo, zTin > Tmax, layer', k
