@@ -633,6 +633,10 @@
          wlat_loc = m1 * deltaT**m2 ! Maykut & Perovich
          rside = wlat_loc*dt*pi/(floeshape*floediameter) ! Steele
          rside = max(c0,min(rside,c1))
+         if (floediameter < floediam) then
+            print 'YYY2 floe diameter ',ijb(1:2),floediameter, aice
+            rside = c1
+         endif
 
          if (rside == c0) return ! nothing more to do so get out
 
