@@ -65,10 +65,6 @@
       use icepack_meltpond_sealvl, only: compute_ponds_sealvl
       use icepack_snow, only: drain_snow
 
-      !debug
-      !use ice_communicate, only : my_task
-      !use icepack_therm_shared, only : ijb
-
       implicit none
 
       private
@@ -634,7 +630,6 @@
          rside = wlat_loc*dt*pi/(floeshape*floediameter) ! Steele
          rside = max(c0,min(rside,c1))
          if (floediameter < floediam) then
-            !print 'YYY2 floe diameter ',ijb(1:2),floediameter, aice
             rside = c1
          endif
 

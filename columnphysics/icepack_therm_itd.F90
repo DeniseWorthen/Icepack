@@ -57,9 +57,6 @@
       use icepack_zbgc, only: lateral_melt_bgc
       use icepack_zbgc_shared, only: bgrid, cgrid, igrid
 
-      !debug
-      !use icepack_therm_shared, only : ijb
-
       implicit none
 
       private
@@ -204,17 +201,9 @@
 
       character(len=*),parameter :: subname='(linear_itd)'
 
-      ! debug
-      !logical :: badpnt
-
       !-----------------------------------------------------------------
       ! Initialize
       !-----------------------------------------------------------------
-
-      !badpnt = .false.
-      !if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1007)badpnt = .true.
-      !if (ijb(1) .eq. 980 .and. ijb(2) .eq. 1006)badpnt = .true.
-      !if (ijb(1) .eq. 40 .and. ijb(2) .eq. 7)badpnt = .true.
 
       do n = 1, ncat
          donor(n) = 0
