@@ -500,7 +500,8 @@
                                         Tbot,     fbot,      &
                                         rsiden,    Cdn_ocn,  &
                                         wlat,      aicen,    &
-                                        afsdn, floediameter)
+                                        afsdn, floediameter, &
+                                        aice_init, mass)
 
       real (kind=dbl_kind), intent(in) :: &
          dt                  ! time step
@@ -515,6 +516,8 @@
          strocnxT, & ! ice-ocean stress, x-direction
          strocnyT, & ! ice-ocean stress, y-direction
          floediameter! single floe diameter in grid cell (m)
+
+      real (kind=dbl_kind), intent(in) :: aice_init, mass
 
       character (char_len), intent(in) :: &
          fbot_xfer_type  ! transfer coefficient type for ice-ocean heat flux
@@ -581,7 +584,9 @@
                                       ! (unitless)
 
       character(len=*),parameter :: subname='(frzmlt_bottom_lateral)'
-
+      ! debug
+      real(kind=dbl_kind) :: dyn_area_min = 0.001d0
+      real(kind=dbl_kind) :: dyn_mass_min = 0.01d0
       !-----------------------------------------------------------------
       ! Identify grid cells where ice can melt.
       !-----------------------------------------------------------------
@@ -629,8 +634,14 @@
          wlat_loc = m1 * deltaT**m2 ! Maykut & Perovich
          rside = wlat_loc*dt*pi/(floeshape*floediameter) ! Steele
          rside = max(c0,min(rside,c1))
-         if (floediameter < floediam) then
+         !print *,'XXX0 ',floediameter,floediam,rside
+         !if (floediameter < floediam) then
+         !   rside = c1
+         !endif
+         if (aice_init < max(dyn_area_min, puny) .or.  aice < max(dyn_area_min, puny) &
+              .or. mass < max(dyn_mass_min, puny)) then
             rside = c1
+            fbot = c0
          endif
 
          if (rside == c0) return ! nothing more to do so get out
@@ -2274,7 +2285,7 @@
                                     dpnd_freebd , dpnd_freebdn, &
                                     dpnd_initial, dpnd_initialn, &
                                     dpnd_dlid   , dpnd_dlidn,   &
-                                    floediameter )
+                                    floediameter, aice_init, mass )
 
       real (kind=dbl_kind), intent(in) :: &
          dt          , & ! time step
@@ -2406,7 +2417,8 @@
          H2_16O_ocn  , & ! ocean concentration of H2_16O      (kg/kg)
          H2_18O_ocn  , & ! ocean concentration of H2_18O      (kg/kg)
          zlvs        , & ! atm level height for scalars (if different than zlvl) (m)
-         floediameter    ! single floe diameter in grid cell (m)
+         floediameter, & ! single floe diameter in grid cell (m)
+         aice_init, mass
 
       real (kind=dbl_kind), dimension(:,:), intent(in), optional :: &
          afsdn        ! afsd tracer
@@ -2747,7 +2759,7 @@
                                   Tbot,      fbot,      &
                                   rsiden,    Cdn_ocn,   &
                                   wlat,      aicen,     &
-                                  afsdn, l_diameter     )
+                                  afsdn, l_diameter, aice_init, mass     )
 
       if (icepack_warnings_aborted(subname)) return
 
