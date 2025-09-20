@@ -1081,11 +1081,37 @@
       real (kind=dbl_kind) , dimension (1):: trcr_skl
       real (kind=dbl_kind) , dimension (nblyr+1):: bvol
 
+      logical (kind=log_kind) :: &
+           zap_residual, &
+           zap_category(ncat)
+      !hardwired for testing
+      real (kind=dbl_kind) :: &
+           dyn_area_min = p001         ,&! minimum ice area for dynamics calculation
+           dyn_mass_min = p01            ! minimum ice mass for dynamics calculation
+      !         dyn_area_min = 1.e-11_dbl_kind,&! minimum ice area for dynamics calculation
+      !         dyn_mass_min = 1.e-10_dbl_kind  ! minimum ice mass for dynamics calculation
+
       character(len=*),parameter :: subname='(zap_small_areas)'
 
       !-----------------------------------------------------------------
       ! I. Zap categories with very small areas.
       !-----------------------------------------------------------------
+
+      !-----------------------------------------------------------------
+      ! Flag categories with very small areas and residual ice
+      !-----------------------------------------------------------------
+
+      zap_category(:) = .false.
+      do n = 1, ncat
+         if ( abs(aicen(n)) <= puny .and. &
+             (abs(aicen(n)) /= c0 .or. abs(vicen(n)) /= c0 .or. abs(vsnon(n)) /= c0)) then
+            zap_category(n) = .true.
+         endif
+      enddo
+
+      zap_residual = .false.
+      if (aice      < max(dyn_area_min, puny) .or. &
+          aice*rhoi < max(dyn_mass_min, puny)) zap_residual = .true. ! all categories
 
       do n = 1, ncat
 
@@ -1097,8 +1123,9 @@
             call icepack_warnings_setabort(.true.,__FILE__,__LINE__)
             call icepack_warnings_add(subname//' Zap ice: negative ice area')
             return
-         elseif (abs(aicen(n)) <= puny .and. &
-                 (abs(aicen(n)) /= c0 .or. abs(vicen(n)) /= c0 .or. abs(vsnon(n)) /= c0)) then
+         !elseif (abs(aicen(n)) <= puny .and. &
+         !        (abs(aicen(n)) /= c0 .or. abs(vicen(n)) /= c0 .or. abs(vsnon(n)) /= c0)) then
+         elseif (zap_category(n) .or. zap_residual) then
 
       !-----------------------------------------------------------------
       ! Account for tracers important for conservation

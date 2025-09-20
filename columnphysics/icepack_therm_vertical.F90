@@ -638,11 +638,11 @@
          !if (floediameter < floediam) then
          !   rside = c1
          !endif
-         if (aice_init < max(dyn_area_min, puny) .or.  aice < max(dyn_area_min, puny) &
-              .or. mass < max(dyn_mass_min, puny)) then
-            rside = c1
-            fbot = c0
-         endif
+         !if (aice_init < max(dyn_area_min, puny) .or.  aice < max(dyn_area_min, puny) &
+         !     .or. mass < max(dyn_mass_min, puny)) then
+         !   rside = c1
+         !   fbot = c0
+         !endif
 
          if (rside == c0) return ! nothing more to do so get out
 
